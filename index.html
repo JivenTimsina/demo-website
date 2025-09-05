@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jiven — Portfolio</title>
+  <meta name="description" content="A modern single-file portfolio built with HTML, CSS and JavaScript.">
+  <style>
+    /* ----------------------
+       Design tokens
+       ---------------------- */
+    :root{
+      --bg:#0f1724; /* dark navy */
+      --card:#0b1220;
+      --muted:#9aa4b2;
+      --accent:#6ee7b7; /* mint */
+      --accent-2:#60a5fa; /* sky */
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --radius:14px;
+      --max-w:1000px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      color-scheme: dark;
+    }
+    /* ----------------------
+       Reset + layout
+       ---------------------- */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,var(--bg) 0%, #071020 60%);
+      color:#e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;justify-content:center;padding:40px 20px;
+    }
+    .wrap{
+      width:100%;max-width:var(--max-w);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:20px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(6px);
+    }
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#042028}
+    h1{font-size:18px;margin:0}
+    .tag{color:var(--muted);font-size:13px}
+
+    /* nav */
+    nav{display:flex;gap:10px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-size:14px}
+    nav a:hover{background:var(--glass);color:var(--accent)}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:10px;color:#022;display:inline-flex;gap:8px;align-items:center;font-weight:600}
+
+    /* grid main */
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.brand h1{font-size:16px}}
+
+    /* hero */
+    .hero{padding:22px;border-radius:14px;background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01));border:1px solid var(--glass-2)}
+    .hero-top{display:flex;gap:16px;align-items:center}
+    .avatar{width:86px;height:86px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));display:grid;place-items:center;font-weight:700;font-size:28px}
+    .hero h2{margin:0 0 6px 0;font-size:22px}
+    .lead{color:var(--muted);margin:0 0 12px}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+
+    /* cards */
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:16px;border-radius:12px;border:1px solid var(--glass-2)}
+    .section{margin-top:16px}
+
+    /* projects */
+    .projects{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+    @media (max-width:700px){.projects{grid-template-columns:1fr}}
+    .project{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid rgba(255,255,255,0.02)}
+    .project h3{margin:0 0 6px;font-size:16px}
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag-pill{font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--muted)}
+
+    /* skills */
+    .skills{display:flex;gap:10px;flex-wrap:wrap}
+    .skill{padding:8px 10px;border-radius:8px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));font-weight:600}
+
+    /* contact */
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:inherit;font-size:14px}
+    input::placeholder,textarea::placeholder{color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* micro-interactions */
+    .fade-in{opacity:0;transform:translateY(8px);animation:fadeIn .6s cubic-bezier(.2,.9,.2,1) forwards}
+    @keyframes fadeIn{to{opacity:1;transform:none}}
+
+    .chip{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);cursor:pointer}
+
+    /* progress bars */
+    .bar{height:10px;border-radius:999px;background:rgba(255,255,255,0.03)}
+    .bar > i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%}
+
+    /* small screens */
+    @media (max-width:480px){body{padding:18px}.wrap{padding:16px;border-radius:12px}}
+
+    /* utilities */
+    .muted{color:var(--muted)}
+    .right{text-align:right}
+    .grid-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">J</div>
+        <div>
+          <h1>Jiven — Software & Web</h1>
+          <div class="tag">Student · CS · C / C++ / Web</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact" class="btn">Contact</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section>
+        <article class="hero card fade-in" id="about">
+          <div class="hero-top">
+            <div class="avatar">JT</div>
+            <div style="flex:1">
+              <h2>Hi — I'm Jiven. I build pragmatic software that doesn't overpromise.</h2>
+              <p class="lead">Computer science student. C & C++ lover. Web tinkerer. I make tools, not excuses. Here are things I actually shipped.</p>
+              <div class="cta-row">
+                <a class="btn" href="#projects">See projects</a>
+                <button id="downloadResume" class="chip">Download Resume</button>
+                <button id="copyEmail" class="chip">Copy Email</button>
+                <button id="toggleTheme" class="chip">Toggle Theme</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="section grid-col">
+            <div class="card" style="padding:12px">
+              <div class="small muted">Experience</div>
+              <div style="margin-top:8px;font-weight:700">BCA Student · Gomendra Multiple College</div>
+              <div class="muted small">Projects, college coursework, open-source contributions.</div>
+            </div>
+
+            <div class="card" style="padding:12px">
+              <div class="small muted">Availability</div>
+              <div style="margin-top:8px;font-weight:700">Open to internships & freelance</div>
+              <div class="muted small">Prefer backend, systems, or efficient C code.</div>
+            </div>
+          </div>
+
+        </article>
+
+        <article class="section card fade-in" id="projects">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h3 style="margin:0">Selected projects</h3>
+            <div style="display:flex;gap:8px">
+              <select id="filter" class="small">
+                <option value="all">All</option>
+                <option value="c">C</option>
+                <option value="web">Web</option>
+                <option value="tools">Tools</option>
+              </select>
+              <div class="small muted">Filter</div>
+            </div>
+          </div>
+
+          <div class="projects" id="projectsList">
+            <div class="project" data-tags="c tools">
+              <h3>Text Editor in C</h3>
+              <div class="muted small">Raw mode terminal editor (college project)</div>
+              <div class="tags" style="margin-top:8px"><span class="tag-pill">C</span><span class="tag-pill">Terminal</span></div>
+            </div>
+
+            <div class="project" data-tags="web">
+              <h3>Typing Test Website</h3>
+              <div class="muted small">A fast, single-page typing test written in vanilla JS.</div>
+              <div class="tags" style="margin-top:8px"><span class="tag-pill">HTML</span><span class="tag-pill">JS</span></div>
+            </div>
+
+            <div class="project" data-tags="c tools">
+              <h3>Contact Directory (C)</h3>
+              <div class="muted small">Binary file handling, CRUD and search features.</div>
+              <div class="tags" style="margin-top:8px"><span class="tag-pill">C</span><span class="tag-pill">Files</span></div>
+            </div>
+
+            <div class="project" data-tags="web">
+              <h3>Portfolio Single File</h3>
+              <div class="muted small">Yes — this page. Minimal, responsive, single HTML file.</div>
+              <div class="tags" style="margin-top:8px"><span class="tag-pill">HTML</span><span class="tag-pill">CSS</span></div>
+            </div>
+
+          </div>
+        </article>
+
+        <article class="section card fade-in" id="skills">
+          <h3 style="margin-top:0">Skills & tools</h3>
+          <div class="skills" style="margin-top:8px">
+            <div class="skill">C</div>
+            <div class="skill">C++</div>
+            <div class="skill">Linux</div>
+            <div class="skill">HTML/CSS/JS</div>
+            <div class="skill">Git</div>
+            <div class="skill">Systems Programming</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="small muted">Proficiency</div>
+            <div style="margin-top:8px" class="bar"><i style="width:80%"></i></div>
+            <div class="small muted" style="margin-top:6px">C — 80%</div>
+          </div>
+        </article>
+
+      </section>
+
+      <aside>
+        <div class="card fade-in">
+          <h3 style="margin-top:0">Contact</h3>
+          <div class="muted small">Prefer email — but if you absolutely must use a form, fine.</div>
+          <form id="contactForm">
+            <input type="text" id="name" placeholder="Your name" required />
+            <input type="email" id="email" placeholder="your@email.com" required />
+            <textarea id="message" placeholder="Say something useful" rows="5" required></textarea>
+            <button type="submit" class="btn">Send message</button>
+          </form>
+          <div style="margin-top:12px" class="small muted">Or copy email: <span id="emailText">jiven@example.com</span></div>
+        </div>
+
+        <div class="card section fade-in">
+          <h4 style="margin:0">Quick links</h4>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+            <a class="chip" href="#projects">Projects</a>
+            <a class="chip" href="#skills">Skills</a>
+            <a class="chip" href="#contact">Contact</a>
+          </div>
+        </div>
+
+        <div class="card section fade-in">
+          <h4 style="margin:0">Fun fact</h4>
+          <p class="muted small" style="margin-top:8px">I write C like I collect stamps — methodically and with quiet satisfaction.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div>© <span id="year"></span> Jiven. Built with caffeine and unresolved TODOs.</div>
+      <div class="muted small">Made for BCA coursework · Gomendra Multiple College</div>
+    </footer>
+  </div>
+
+  <script>
+    // Small utility helpers
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+    // dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // copy email
+    document.getElementById('copyEmail').addEventListener('click', async ()=>{
+      const email = 'jiven@example.com';
+      try{ await navigator.clipboard.writeText(email); alert('Email copied to clipboard: ' + email) }
+      catch(e){ prompt('Copy email manually:', email) }
+    });
+
+    // download resume (generates a tiny text resume blob for demo)
+    document.getElementById('downloadResume').addEventListener('click', ()=>{
+      const resume = `Jiven\nComputer Science Student\nSkills: C, C++, HTML/CSS/JS\nProjects: Text Editor, Typing Test, Contact Directory\n`;
+      const blob = new Blob([resume],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'Jiven-Resume.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // theme toggle (simple -- adds inline dark/light inversion)
+    let light = false;
+    document.getElementById('toggleTheme').addEventListener('click', ()=>{
+      light = !light;
+      if(light){document.documentElement.style.setProperty('--bg','#f3f6f9');document.documentElement.style.setProperty('--card','#ffffff');document.documentElement.style.setProperty('--accent','#0ea5a6');document.body.style.color='#051225'}
+      else{document.documentElement.style.setProperty('--bg','#0f1724');document.documentElement.style.setProperty('--card','#0b1220');document.documentElement.style.setProperty('--accent','#6ee7b7');document.body.style.color=''}
+    });
+
+    // project filter
+    document.getElementById('filter').addEventListener('change', (e)=>{
+      const val = e.target.value;
+      $$('#projectsList .project').forEach(p=>{
+        const tags = p.dataset.tags || '';
+        if(val==='all' || tags.includes(val)) p.style.display = '';
+        else p.style.display = 'none';
+      });
+    });
+
+    // simple contact form handler -> opens mailto to avoid server
+    document.getElementById('contactForm').addEventListener('submit', (ev)=>{
+      ev.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const msg = document.getElementById('message').value.trim();
+      if(!name || !email || !msg){alert('Fill all fields, please. You are not impressing anyone yet.');return}
+      const subject = encodeURIComponent(`Contact from portfolio: ${name}`);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${msg}`);
+      window.location.href = `mailto:jiven@example.com?subject=${subject}&body=${body}`;
+    });
+
+    // small entrance animation delay
+    window.addEventListener('load', ()=>{$$('.fade-in').forEach((el,i)=>el.style.animationDelay = (i*80)+'ms');});
+
+    // accessibility: focus outline for keyboard users
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Tab') document.body.classList.add('show-focus') });
+  </script>
+</body>
+</html>
+
